@@ -8,19 +8,18 @@ try {
     $stmt = $pdo->prepare($get_category_sql);
 
     if (isset($_GET['id'])) {
-        $stmt->execute([':id' => $id]);
+        $stmt->execute([':id' => $_GET['id']]);
 
         $category = $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     if (isset($_POST['submit'])) {
-
         $update_category_sql = "UPDATE categories SET name = :name WHERE id = :id";
         $stmt = $pdo->prepare($update_category_sql);
 
         $stmt->execute([
             ':name' => $_POST['name'],
-            ':id'=> $id
+            ':id'=> $_GET['id']
         ]);
     }
 } catch (PDOException $e) {
@@ -202,7 +201,7 @@ try {
                                     },
                                     submitHandler: function(form) {
                                         $.ajax({
-                                            url: '<?php echo route("ecom/admin/categories/edit.php"); ?>',
+                                            url: '<?php echo route("ecom/admin/categories/edit.php?id=" . $_GET['id']); ?>',
                                             type: 'POST',
                                             data: $(form).serialize(),
                                             success: function(response) {

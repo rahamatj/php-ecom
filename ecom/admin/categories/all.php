@@ -133,7 +133,10 @@ try {
                                     <td><?php echo $category['name']; ?></td>
                                     <td>
                                         <a href="<?php echo route("ecom/admin/categories/edit.php?id=" . $category['id']); ?>">Edit</a>
-                                        <a href="#">Delete</a>
+                                        <a href="#" onclick="destroy(<?php echo $category['id']; ?>)">Delete</a>
+                                        <form style="display: none;" id="delete-category-form-<?php echo $category['id']; ?>" action="<?php echo route("ecom/admin/categories/delete.php?id=" . $category['id']); ?>" method="POST">
+                                            <input type="hidden" name="id" value="<?php echo $category['id']; ?>">
+                                        </form>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -215,6 +218,7 @@ try {
         crossorigin="anonymous"></script>
     <!-- jsvectormap -->
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('#categories-table').DataTable({
@@ -223,6 +227,24 @@ try {
                 ] // [columnIndex, 'asc' or 'desc']
             });
         });
+
+        function destroy(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-category-form-' + id).submit();
+                    // location.reload();
+                }
+            });
+        }
     </script>
 
     <!--end::Script-->
