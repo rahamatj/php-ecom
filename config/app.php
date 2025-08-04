@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'project_url' => 'http://localhost/php-ecom',
+    'project_name' => 'php-ecom',
+    'project_url' => 'http://localhost:8081',
 ];

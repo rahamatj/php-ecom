@@ -1,4 +1,5 @@
 <?php
 
 require "./functions.php";
-require "./ecom/home.php";
+require "./ecom/frontend/home.php";
+
