@@ -4,10 +4,11 @@ require __DIR__ . "/../../../functions.php";
 $pdo = require __DIR__ . "/../../../connection.php";
 
 try {
-    $sql = "INSERT INTO categories (name) VALUES (:name)";
-    $stmt = $pdo->prepare($sql);
 
-    if (isset($_POST['name'])) {
+    if (isset($_POST['submit'])) {
+        $sql = "INSERT INTO categories (name) VALUES (:name)";
+        $stmt = $pdo->prepare($sql);
+
         $stmt->execute([
             ':name' => $_POST['name']
         ]);
@@ -162,7 +163,7 @@ try {
                             <!--end::Body-->
                             <!--begin::Footer-->
                             <div class="card-footer">
-                                <button class="btn btn-info" type="submit">Submit form</button>
+                                <input name="submit" value="Submit" class="btn btn-info" type="submit" />
                             </div>
                             <!--end::Footer-->
                         </form>
@@ -190,7 +191,7 @@ try {
                                     },
                                     submitHandler: function(form) {
                                         $.ajax({
-                                            url: '<?php echo route("ecom/admin/categories/new.php"); ?>', // Replace with your server endpoint
+                                            url: '<?php echo route("ecom/admin/categories/new.php"); ?>',
                                             type: 'POST',
                                             data: $(form).serialize(),
                                             success: function(response) {

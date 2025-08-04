@@ -4,10 +4,25 @@ require __DIR__ . "/../../../functions.php";
 $pdo = require __DIR__ . "/../../../connection.php";
 
 try {
-    $sql = "SELECT * FROM categories";
-    $stmt = $pdo->query($sql);
+    $get_category_sql = "SELECT * FROM categories WHERE id = :id";
+    $stmt = $pdo->prepare($get_category_sql);
 
-    $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (isset($_GET['id'])) {
+        $stmt->execute([':id' => $id]);
+
+        $category = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    if (isset($_POST['submit'])) {
+
+        $update_category_sql = "UPDATE categories SET name = :name WHERE id = :id";
+        $stmt = $pdo->prepare($update_category_sql);
+
+        $stmt->execute([
+            ':name' => $_POST['name'],
+            ':id'=> $id
+        ]);
+    }
 } catch (PDOException $e) {
     echo "Something went wrong: " . $e->getMessage() . "\n";
     die();
@@ -80,6 +95,15 @@ try {
         integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4="
         crossorigin="anonymous" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.css" />
+
+    <style>
+        label.error {
+            color: red;
+            font-size: 14px;
+            margin-top: 4px;
+            display: block;
+        }
+    </style>
 </head>
 <!--end::Head-->
 <!--begin::Body-->
@@ -120,25 +144,89 @@ try {
             <div class="app-content">
                 <!--begin::Container-->
                 <div class="container-fluid">
-                    <table id="categories-table">
-                        <thead>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Actions</th>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($categories as $category) : ?>
-                                <tr>
-                                    <td><?php echo $category['id']; ?></td>
-                                    <td><?php echo $category['name']; ?></td>
-                                    <td>
-                                        <a href="<?php echo route("ecom/admin/categories/edit.php?id=" . $category['id']); ?>">Edit</a>
-                                        <a href="#">Delete</a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
+                    <div class="card card-info card-outline mb-4">
+                        <!--begin::Header-->
+                        <div class="card-header">
+                            <div class="card-title">Edit Category</div>
+                        </div>
+                        <!--end::Header-->
+                        <!--begin::Form-->
+                        <form id="edit-category-form" novalidate method="POST">
+                            <!--begin::Body-->
+                            <div class="card-body">
+                                <!--begin::Row-->
+                                <div class="row g-3">
+                                    <!--begin::Col-->
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">Category Name</label>
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            id="name"
+                                            name="name"
+                                            value="<?php echo $category['name']; ?>"
+                                            required />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <!--end::Row-->
+                            </div>
+                            <!--end::Body-->
+                            <!--begin::Footer-->
+                            <div class="card-footer">
+                                <input name="submit" value="Submit" class="btn btn-info" type="submit" />
+                            </div>
+                            <!--end::Footer-->
+                        </form>
+                        <!--end::Form-->
+                        <!--begin::JavaScript-->
+                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+                        <script>
+                            (() => {
+                                $("#edit-category-form").validate({
+                                    rules: {
+                                        name: {
+                                            required: true,
+                                            minlength: 3
+                                        },
+                                    },
+                                    messages: {
+                                        name: {
+                                            required: "Please enter your name",
+                                            minlength: "Name must be at least 3 characters"
+                                        }
+                                    },
+                                    submitHandler: function(form) {
+                                        $.ajax({
+                                            url: '<?php echo route("ecom/admin/categories/edit.php"); ?>',
+                                            type: 'POST',
+                                            data: $(form).serialize(),
+                                            success: function(response) {
+                                                console.log(response);
+                                                Swal.fire({
+                                                    icon: 'success',
+                                                    title: 'Success!',
+                                                    text: 'Category updated successfully!',
+                                                });
+                                            },
+                                            error: function(xhr, status, error) {
+                                                Swal.fire({
+                                                    icon: 'error',
+                                                    title: 'Error!',
+                                                    text: 'Something went wrong. Please try again.',
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            })();
+                        </script>
+                        <!--end::JavaScript-->
+                    </div>
                 </div>
                 <!--end::Container-->
             </div>
@@ -152,10 +240,7 @@ try {
     <!--end::App Wrapper-->
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
-    <script
-        src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-        crossorigin="anonymous"></script>
+
     <script
         src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
         crossorigin="anonymous"></script>
@@ -192,36 +277,11 @@ try {
     </script>
     <!--end::OverlayScrollbars Configure-->
     <!-- OPTIONAL SCRIPTS -->
-    <!-- sortablejs -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"
-        crossorigin="anonymous"></script>
-    <!-- sortablejs -->
-    <script>
-        new Sortable(document.querySelector('.connectedSortable'), {
-            group: 'shared',
-            handle: '.card-header',
-        });
-
-        const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
-        cardHeaders.forEach((cardHeader) => {
-            cardHeader.style.cursor = 'move';
-        });
-    </script>
-    <!-- apexcharts -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
-        integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8="
-        crossorigin="anonymous"></script>
     <!-- jsvectormap -->
     <script src="https://cdn.datatables.net/2.3.2/js/dataTables.js"></script>
     <script>
         $(document).ready(function() {
-            $('#categories-table').DataTable({
-                order: [
-                    [0, 'desc']
-                ] // [columnIndex, 'asc' or 'desc']
-            });
+            $('#categories-table').DataTable();
         });
     </script>
 
