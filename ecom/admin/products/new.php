@@ -247,7 +247,6 @@ try {
                                             class="form-control"
                                             id="image"
                                             name="image"
-                                            accept="image/*"
                                             required />
                                     </div>
                                     <div class="col-md-6">
@@ -278,80 +277,7 @@ try {
                         </form>
                         <!--end::Form-->
                         <!--begin::JavaScript-->
-                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                        <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
-                        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-                        <script>
-                            (() => {
-                                $("#new-product-form").validate({
-                                    rules: {
-                                        name: {
-                                            required: true,
-                                            minlength: 3
-                                        },
-                                        price: {
-                                            required: true,
-                                            min: 0
-                                        },
-                                        category_id: {
-                                            required: true
-                                        },
-                                        description: {
-                                            required: true
-                                        },
-                                        image: {
-                                            required: true
-                                        },
-                                        stock: {
-                                            required: true,
-                                            min: 0
-                                        },
-                                        is_active: {
-                                            required: true
-                                        }
-                                    },
-                                    submitHandler: function(form) {
-                                        // let fileData = $('#new-product-form').prop('files')[0];
-
-                                        let formData = new FormData(form);
-
-                                        // formData.append('file', fileData);
-
-                                        // console.log(formData);
-
-                                        // Swal.fire({
-                                        //     icon: 'success',
-                                        //     title: 'Success!',
-                                        //     text: 'Product created successfully!',
-                                        // });
-
-                                        $.ajax({
-                                            url: '<?php echo route("ecom/admin/products/new.php"); ?>',
-                                            type: 'POST',
-                                            data: formData,
-                                            success: function(response) {
-                                                console.log('success');
-                                                Swal.fire({
-                                                    icon: 'success',
-                                                    title: 'Success!',
-                                                    text: 'Product created successfully!',
-                                                });
-                                                form.reset();
-                                            },
-                                            error: function(xhr, status, error) {
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Error!',
-                                                    text: 'Something went wrong. Please try again.',
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            })();
-                        </script>
                         <!--end::JavaScript-->
                     </div>
                 </div>
@@ -367,6 +293,10 @@ try {
     <!--end::App Wrapper-->
     <!--begin::Script-->
     <!--begin::Third Party Plugin(OverlayScrollbars)-->
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script
         src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"
@@ -419,6 +349,71 @@ try {
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote.min.js"></script>
+
+    <script>
+        (() => {
+            $("#new-product-form").validate({
+                rules: {
+                    name: {
+                        required: true,
+                        minlength: 3
+                    },
+                    price: {
+                        required: true,
+                        min: 0
+                    },
+                    category_id: {
+                        required: true
+                    },
+                    description: {
+                        required: true
+                    },
+                    image: {
+                        required: true
+                    },
+                    stock: {
+                        required: true,
+                        min: 0
+                    },
+                    is_active: {
+                        required: true
+                    }
+                },
+                submitHandler: function(form) {
+                    let fileData = $('#new-product-form').prop('files');
+                    let formData = new FormData(form);
+
+                    formData.append('file', fileData);
+
+                    $.ajax({
+                        url: '<?php echo route("ecom/admin/products/new.php"); ?>',
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Product created successfully!',
+                            });
+                            form.reset();
+                        },
+                        error: function(xhr, status, error) {
+                            console.log('error');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Something went wrong. Please try again.',
+                            });
+                        }
+                    });
+
+                    return false;
+                }
+            });
+        })();
+    </script>
 
     <!--end::Script-->
 </body>
