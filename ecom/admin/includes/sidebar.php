@@ -57,6 +57,28 @@
                         </li>
                     </ul>
                 </li>
+                <li class="nav-item menu-open">
+                    <a href="#" class="nav-link active">
+                        <i class="nav-icon bi bi-speedometer"></i>
+                        <p>
+                            Products
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="<?php echo route("ecom/admin/products/all.php"); ?>" class="nav-link active">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>All</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="<?php echo route("ecom/admin/products/new.php"); ?>" class="nav-link">
+                                <i class="nav-icon bi bi-circle"></i>
+                                <p>New</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
                 <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon bi bi-box-seam-fill"></i>
