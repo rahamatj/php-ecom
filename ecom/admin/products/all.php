@@ -132,7 +132,7 @@ try {
                                 <tr>
                                     <td><?php echo $product['id']; ?></td>
                                     <td><?php echo $product['name']; ?></td>
-                                    <td><img src="<?php echo $product['image']; ?>" alt="<?php echo $product['name']; ?>" width="300"></td>
+                                    <td><?php echo $product['image']; ?></td>
                                     <td>
                                         <a href="<?php echo route("ecom/admin/products/edit.php?id=" . $product['id']); ?>">Edit</a>
                                         <a href="#" onclick="destroy(<?php echo $product['id']; ?>)">Delete</a>

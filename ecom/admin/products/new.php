@@ -4,6 +4,7 @@ require __DIR__ . "/../../../functions.php";
 $pdo = require __DIR__ . "/../../../connection.php";
 
 try {
+    $destination = "";
 
     $categories = $pdo->query("SELECT * FROM categories")->fetchAll(PDO::FETCH_ASSOC);
 
@@ -13,13 +14,11 @@ try {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Config
-            $uploadDir = '/assets/uploads/';
+
+            $uploadDir = __DIR__ . './../../../assets/uploads/';
+            $relPath = '/assets/uploads/';
             $maxFileSize = 2 * 1024 * 1024; // 2MB
             $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-
-            var_dump($_POST);
-            // echo "Error: " . $_FILES['image']['error'];
-            die();
 
             if (isset($_FILES['image'])) {
                 $fileTmp = $_FILES['image']['tmp_name'];
@@ -30,7 +29,6 @@ try {
 
                 // Validate file type
                 if (!in_array($fileType, $allowedTypes)) {
-                    // die("Invalid file type.");
                     echo "Invalid file type.";
                     exit;
                 }
@@ -43,11 +41,12 @@ try {
 
                 // Rename file (avoid name collisions)
                 $newFileName = uniqid("img_", true) . "." . $fileExt;
+                $relDestination = $relPath . $newFileName;
                 $destination = $uploadDir . $newFileName;
 
                 // Move the uploaded file
                 if (move_uploaded_file($fileTmp, $destination)) {
-                    echo "Image uploaded successfully: <a href='$destination'>View</a>";
+                    echo "Image uploaded successfully.";
                 } else {
                     echo "Failed to move the uploaded file.";
                 }
@@ -61,7 +60,7 @@ try {
             ':price' => $_POST['price'],
             ':category_id' => $_POST['category_id'],
             ':description' => $_POST['description'],
-            ':image' => $destination,
+            ':image' => $relDestination,
             ':stock' => $_POST['stock'],
             ':is_active' => $_POST['is_active']
         ]);
@@ -247,7 +246,7 @@ try {
                                             type="file"
                                             class="form-control"
                                             id="image"
-                                            name="product_image"
+                                            name="image"
                                             accept="image/*"
                                             required />
                                     </div>
@@ -262,7 +261,7 @@ try {
                                     </div>
                                     <div class="col-md-6">
                                         <label>
-                                            <input type="checkbox" name="subscribe" value="1" checked>
+                                            <input type="checkbox" name="is_active" value="1" checked>
                                             Active
                                         </label>
                                     </div>
@@ -314,12 +313,26 @@ try {
                                         }
                                     },
                                     submitHandler: function(form) {
+                                        // let fileData = $('#new-product-form').prop('files')[0];
+
+                                        let formData = new FormData(form);
+
+                                        // formData.append('file', fileData);
+
+                                        // console.log(formData);
+
+                                        // Swal.fire({
+                                        //     icon: 'success',
+                                        //     title: 'Success!',
+                                        //     text: 'Product created successfully!',
+                                        // });
+
                                         $.ajax({
                                             url: '<?php echo route("ecom/admin/products/new.php"); ?>',
                                             type: 'POST',
-                                            data: $(form).serialize(),
+                                            data: formData,
                                             success: function(response) {
-                                                console.log(response);
+                                                console.log('success');
                                                 Swal.fire({
                                                     icon: 'success',
                                                     title: 'Success!',
