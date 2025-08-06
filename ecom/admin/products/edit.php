@@ -15,7 +15,7 @@ try {
         $stmt = $pdo->prepare($get_product_sql);
 
         if (isset($_GET['id'])) {
-            $stmt->execute([':id' => $_GET['id']]);
+            $stmt->execute([':id' => $id]);
 
             $product = $stmt->fetch(PDO::FETCH_ASSOC);
         }
@@ -30,7 +30,11 @@ try {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-            if (isset($_FILES['image'])) {
+            // if ($_FILES['image']) {
+            //     echo json_encode($_FILES['image']);
+            // }
+
+            if ($_FILES['image']['size'] > 0) {
 
                 $uploadDir = __DIR__ . './../../../assets/uploads/';
                 $relPath = '/assets/uploads/';
@@ -44,9 +48,18 @@ try {
                 }
 
                 $fileTmp = $_FILES['image']['tmp_name'];
+
+                // if ($fileTmp) {
+                //     echo json_encode($fileTmp);
+                // }
+
+
+                // if (!empty($fileTmp)) {
                 $fileName = basename($_FILES['image']['name']);
                 $fileSize = $_FILES['image']['size'];
-                $fileType = mime_content_type($fileTmp);
+
+                $fileType = $_FILES["image"]["type"];
+
                 $fileExt = pathinfo($fileName, PATHINFO_EXTENSION);
 
                 // Validate file type
@@ -72,8 +85,7 @@ try {
                 } else {
                     echo "Failed to move the uploaded file.";
                 }
-            } else {
-                echo "No file uploaded or there was an upload error.";
+                // }
             }
         }
 
@@ -277,8 +289,7 @@ try {
                                             type="file"
                                             class="form-control"
                                             id="image"
-                                            name="image"
-                                            value="<?php echo $product['image']; ?>" />
+                                            name="image">
                                     </div>
                                     <div class="col-md-6">
                                         <label for="stock" class="form-label">Stock</label>
@@ -414,17 +425,19 @@ try {
                     },
                 },
                 submitHandler: function(form) {
+
                     let fileData = $('#edit-product-form').prop('files');
                     let formData = new FormData(form);
 
-                    formData.append('file', fileData);
+                    formData.append('image', fileData);
 
-                    $('#description').summernote('code', form.description);
+                    // $('#description').summernote('code', form.description);
 
-                    console.log(formData.getAll());
+                    // console.log(formData.getAll());
+                    // throw Error;
 
                     $.ajax({
-                        url: '<?php echo route("ecom/admin/products/edit.php?id=" . $product['id']); ?>',
+                    url: '<?php echo route("ecom/admin/products/edit.php?id=" . $product['id']); ?>',
                         type: 'POST',
                         data: formData,
                         contentType: false,
@@ -433,7 +446,7 @@ try {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Success!',
-                                text: 'Product created successfully!',
+                                text: 'Product updated successfully!',
                             });
                             form.reset();
                         },

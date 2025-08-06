@@ -9,7 +9,7 @@ try {
             price DECIMAL(10, 2) NOT NULL,
             category_id INT NOT NULL,
             description TEXT,
-            image VARCHAR(255),
+            image VARCHAR(255) NULL,
             stock INT NOT NULL,
             is_active BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
