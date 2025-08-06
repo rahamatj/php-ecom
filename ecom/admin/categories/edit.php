@@ -201,7 +201,7 @@ try {
                                     },
                                     submitHandler: function(form) {
                                         $.ajax({
-                                            url: '<?php echo route("ecom/admin/categories/edit.php?id=" . $_GET['id']); ?>',
+                                            url: '<?php echo route("ecom/admin/categories/edit.php?id=" . $category['id']); ?>',
                                             type: 'POST',
                                             data: $(form).serialize(),
                                             success: function(response) {

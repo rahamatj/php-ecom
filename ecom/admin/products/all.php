@@ -120,7 +120,7 @@ try {
             <div class="app-content">
                 <!--begin::Container-->
                 <div class="container-fluid">
-                    <table id="categories-table">
+                    <table id="products-table">
                         <thead>
                             <th>Id</th>
                             <th>Name</th>
@@ -132,7 +132,7 @@ try {
                                 <tr>
                                     <td><?php echo $product['id']; ?></td>
                                     <td><?php echo $product['name']; ?></td>
-                                    <td><?php echo $product['image']; ?></td>
+                                    <td><img src="<?php echo asset($product['image']) ?>" alt="Product Image" style="width: 100px;"></td>
                                     <td>
                                         <a href="<?php echo route("ecom/admin/products/edit.php?id=" . $product['id']); ?>">Edit</a>
                                         <a href="#" onclick="destroy(<?php echo $product['id']; ?>)">Delete</a>
@@ -223,7 +223,7 @@ try {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            $('#categories-table').DataTable({
+            $('#products-table').DataTable({
                 order: [
                     [0, 'desc']
                 ] // [columnIndex, 'asc' or 'desc']
